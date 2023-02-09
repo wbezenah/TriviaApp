@@ -22,6 +22,7 @@ public class PlayPanel extends JPanel{
 	}
 	
 	private ArrayList<Problem> problems;
+	private ArrayList<Problem> usedProblems;
 	private Random random = new Random();
 	
 	private File questionsFile = new File("data/questions.txt");
@@ -60,27 +61,23 @@ public class PlayPanel extends JPanel{
 			informationPanel.add(quitButton);
 			informationPanel.add(scoreLabel);
 			
+			usedProblems = new ArrayList<Problem>();
 			problems = new ArrayList<Problem>();
 			readQuestions();
 			
 			questionPanel = new JPanel();
 			answersPanel = new JPanel(new FlowLayout());
-			if(loadQuestion()) {
-				this.setLayout(new GridLayout(3,1));
-				this.add(informationPanel);
-				this.add(questionPanel);
-				this.add(answersPanel);
-				
-			}else {
-				reset();
-				//Won
-			}
+			
+			this.setLayout(new GridLayout(3,1));
 			
 		}catch(Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
+	/*
+	 * Reads in questions from scanner/text file
+	 */
 	private void readQuestions() {
 		while(sc.hasNextLine()) {
 			String line = sc.nextLine();
@@ -98,11 +95,26 @@ public class PlayPanel extends JPanel{
 		sc.close();
 	}
 	
-	private Boolean loadQuestion() {
-		if(problems.size() == 0) { return false; }
+	/*
+	 * Loads an unused question into the PlayPanel
+	 * Returns false if no questions are left, else true
+	 */
+	protected boolean loadQuestion() {
+		if(problems.size() == 0) { 
+			endGame();
+			return false;
+		}
 		
-		int index = random.nextInt(0, problems.size());
+		this.add(informationPanel);
+		this.add(questionPanel);
+		this.add(answersPanel);
+		
+		questionPanel.removeAll();
+		answersPanel.removeAll();
+		
+		int index = random.nextInt(problems.size());
 		Problem p = problems.remove(index);
+		usedProblems.add(p);
 		questionPanel.add(new JLabel(p.question));
 		
 		for(int i = 0; i < 3; i++) {
@@ -111,14 +123,14 @@ public class PlayPanel extends JPanel{
 				tmp.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						score++;
-						//Update scoreLabel
-						//Next Question
+						scoreLabel.setText("Score: " + score);
+						loadQuestion();
 					}
 				});
 			}else {
 				tmp.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						//Next Question
+						loadQuestion();
 					}
 				});
 			}
@@ -128,15 +140,38 @@ public class PlayPanel extends JPanel{
 		for(JButton b: choiceButtons) {
 			answersPanel.add(b);
 		}
+		questionPanel.revalidate();
+		answersPanel.revalidate();
+		questionPanel.repaint();
+		answersPanel.repaint();
 		
 		return true;
 	}
 	
+	private void endGame() {
+		this.remove(answersPanel);
+		this.revalidate();
+		this.repaint();
+		questionPanel.removeAll();
+		questionPanel.add(new JLabel("You finished the game!"));
+		questionPanel.revalidate();
+		questionPanel.repaint();
+	}
+	
+	/*
+	 * Resets PlayPanel information including which questions have been used and the score
+	 */
 	private void reset() {
-		
+		problems.clear();
+		for(Problem p : usedProblems) {
+			problems.add(p);
+		}
+		usedProblems.clear();
+		score = 0;
+		scoreLabel.setText("Score: " + score);
 	}
 	
 //	public static void main(String args[]) {
-//		new PlayPanel(new CardLayout(), new JPanel());
+//
 //	}
 }

@@ -18,8 +18,9 @@ public class TriviaGame {
 		panelContainer = new JPanel();
 		cl = new CardLayout();
 		
-		mP = new MainPanel(cl, panelContainer);
+		
 		play = new PlayPanel(cl, panelContainer);
+		mP = new MainPanel(cl, panelContainer, play);
 		
 		panelContainer.setLayout(cl);
 		

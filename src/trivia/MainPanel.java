@@ -13,15 +13,18 @@ public class MainPanel extends JPanel{
 	private JLabel title;
 	private JButton startButton;
 	
+	//References
 	private CardLayout cl;
 	private JPanel container;
+	private PlayPanel playPanel;
 	
-	public MainPanel(CardLayout c, JPanel p) {
+	public MainPanel(CardLayout c, JPanel p, PlayPanel pp) {
 		super();
 		this.setLayout(new GridLayout(2,1));
 		
 		cl = c;
 		container = p;
+		playPanel = pp;
 		title = new JLabel("Welcome to Trivia");
 		
 		textPanel = new JPanel();
@@ -31,6 +34,7 @@ public class MainPanel extends JPanel{
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cl.show(container, "PLAY");
+				playPanel.loadQuestion();
 			}
 		});
 		
