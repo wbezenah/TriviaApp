@@ -1,2 +1,4 @@
 On which planet does Luke Skywalker find Yoda in The Empire Strikes Back?;Bespin;Dagobah;Coruscant;1
 What race of alien is Chewbacca?;Wookie;Geonosian;Ewok;0
+What kind of starfighter does Luke Skywalker fly throughout the Original Trilogy?;Tie-Fighter;B-Wing;X-Wing;2
+On which Tatooine city does Jabba hold the Boonta Eve podrace?;Mos Espa;Mos Eisley; Anchorhead;0
