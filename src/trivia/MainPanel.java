@@ -34,7 +34,7 @@ public class MainPanel extends JPanel{
 		startButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cl.show(container, "PLAY");
-				playPanel.loadQuestion();
+				playPanel.init();
 			}
 		});
 		

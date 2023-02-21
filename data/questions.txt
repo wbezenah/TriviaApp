@@ -2,3 +2,7 @@ On which planet does Luke Skywalker find Yoda in The Empire Strikes Back?;Bespin
 What race of alien is Chewbacca?;Wookie;Geonosian;Ewok;0
 What kind of starfighter does Luke Skywalker fly throughout the Original Trilogy?;Tie-Fighter;B-Wing;X-Wing;2
 On which Tatooine city does Jabba hold the Boonta Eve podrace?;Mos Espa;Mos Eisley; Anchorhead;0
+What color is Anakin Skywalker's Jedi Starfighter in Episode III?;Red;Yellow;Purple;1
+In The Mandalorian, what color are Ahsoka's lightsabers?;Green;Blue;White;2
+What is Count Dooku's Sith name?;Darth Malgus; Darth Tyrannus; Darth Plagueis;1
+In how many parsecs did Han Solo complete the Kessel Run?;12;14;8;0

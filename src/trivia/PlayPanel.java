@@ -12,73 +12,82 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class PlayPanel extends JPanel{
+public class PlayPanel extends JPanel {
+	
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 2L;
 
-	private class Problem{
+	private class Problem {
 		String question;
 		String[] choices = new String[3];
 		int correctIndex;
 	}
 	
-	private ArrayList<Problem> problems;
-	private ArrayList<Problem> usedProblems;
-	private Random random = new Random();
+	private ArrayList<Problem> problems = new ArrayList<Problem>();
+	private ArrayList<Problem> usedProblems = new ArrayList<Problem>();
+	boolean loaded = false;
 	
+	private Random random = new Random();
 	private File questionsFile = new File("data/questions.txt");
 	private Scanner sc;
-	private CardLayout cl;
-	private JPanel container;
 	
-	private JPanel informationPanel;
-	private JPanel questionPanel;
-	private JPanel answersPanel;
+	private CardLayout clREF;
+	private JPanel jpREF;
 	
-	private JButton[] choiceButtons = new JButton[3];
+	private JPanel infoPanel = new JPanel(new FlowLayout());
+	/* infoPanel member */ private JLabel scoreLabel;
+	/* infoPanel member */ private JButton quitButton;
 	
-	private JButton quitButton;
-	private JLabel scoreLabel;
+	private JPanel questionPanel = new JPanel();
+	private JPanel answersPanel = new JPanel(new FlowLayout());
 	
-	private int score = 0;
+	private int currScore = 0;
 	
+	/*
+	 * Constructor for PlayPanel.
+	 * @param c - A CardLayout object that manages all primary panels for the current TriviaGame
+	 * @param p - A JPanel object that can be used with c to change the current panel displayed in the TriviaGame
+	 */
 	public PlayPanel(CardLayout c, JPanel p) {
 		try {
 			sc = new Scanner(questionsFile);
-			container = p;
-			cl = c;
-			
-			informationPanel = new JPanel(new FlowLayout());
-			
-			quitButton = new JButton("Quit");
-			quitButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					reset();
-					cl.show(container, "MAIN");
-				}
-			});
-			scoreLabel = new JLabel("Score: " + score);
-			
-			informationPanel.add(quitButton);
-			informationPanel.add(scoreLabel);
-			
-			usedProblems = new ArrayList<Problem>();
-			problems = new ArrayList<Problem>();
-			readQuestions();
-			
-			questionPanel = new JPanel();
-			answersPanel = new JPanel(new FlowLayout());
-			
-			this.setLayout(new GridLayout(3,1));
-			
-		}catch(Exception ex) {
-			ex.printStackTrace();
+			clREF = c;
+			jpREF = p;
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
 	/*
-	 * Reads in questions from scanner/text file
+	 * Initialize a game
 	 */
-	private void readQuestions() {
+	protected void init() {
+		this.setLayout(new GridLayout(3,1));
+		
+		quitButton = new JButton("Quit");
+		quitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				reset();
+				clREF.show(jpREF, "MAIN");
+			}
+		});
+		scoreLabel = new JLabel("Score: " + currScore);
+		infoPanel.add(scoreLabel);
+		infoPanel.add(quitButton);
+		
+		if(!loaded) { loadQuestions(); }
+		this.add(infoPanel);
+		this.add(questionPanel);
+		this.add(answersPanel);
+		newQuestion(false);
+	}
+	
+	/*
+	 * Loads questions from file specified by this.questionsFile
+	 */
+	private void loadQuestions() {
 		while(sc.hasNextLine()) {
 			String line = sc.nextLine();
 			int index = line.indexOf(';');
@@ -93,21 +102,14 @@ public class PlayPanel extends JPanel{
 			problems.add(pr);
 		}
 		sc.close();
+		loaded = true;
 	}
 	
-	/*
-	 * Loads an unused question into the PlayPanel
-	 * Returns false if no questions are left, else true
-	 */
-	protected boolean loadQuestion() {
-		if(problems.size() == 0) { 
+	private void newQuestion(boolean lastCorrect) {
+		if(problems.size() == 0) {
 			endGame();
-			return false;
+			return;
 		}
-		
-		this.add(informationPanel);
-		this.add(questionPanel);
-		this.add(answersPanel);
 		
 		questionPanel.removeAll();
 		answersPanel.removeAll();
@@ -122,56 +124,48 @@ public class PlayPanel extends JPanel{
 			if(i == p.correctIndex) {
 				tmp.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						score++;
-						scoreLabel.setText("Score: " + score);
-						loadQuestion();
+						currScore++;
+						scoreLabel.setText("Score: " + currScore);
+						newQuestion(true);
 					}
 				});
 			}else {
 				tmp.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						loadQuestion();
+						newQuestion(false);
 					}
 				});
 			}
-			choiceButtons[i] = tmp;
+			answersPanel.add(tmp);
 		}
 		
-		for(JButton b: choiceButtons) {
-			answersPanel.add(b);
-		}
 		questionPanel.revalidate();
-		answersPanel.revalidate();
 		questionPanel.repaint();
+		answersPanel.revalidate();
 		answersPanel.repaint();
-		
-		return true;
 	}
 	
 	private void endGame() {
 		this.remove(answersPanel);
 		this.revalidate();
 		this.repaint();
+		
 		questionPanel.removeAll();
 		questionPanel.add(new JLabel("You finished the game!"));
 		questionPanel.revalidate();
 		questionPanel.repaint();
 	}
 	
-	/*
-	 * Resets PlayPanel information including which questions have been used and the score
-	 */
 	private void reset() {
-		problems.clear();
+		infoPanel.removeAll();
+		infoPanel.revalidate();
+		infoPanel.repaint();
+		
 		for(Problem p : usedProblems) {
 			problems.add(p);
 		}
 		usedProblems.clear();
-		score = 0;
-		scoreLabel.setText("Score: " + score);
+		currScore = 0;
+		scoreLabel.setText("Score: " + currScore);
 	}
-	
-//	public static void main(String args[]) {
-//
-//	}
 }
